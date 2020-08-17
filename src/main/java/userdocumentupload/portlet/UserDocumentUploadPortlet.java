@@ -80,7 +80,11 @@ public class UserDocumentUploadPortlet extends MVCPortlet {
 			long repositoryId = themeDisplay.getScopeGroupId();
 			try {
 				ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFolder.class.getName(), actionRequest);
-				folder = DLAppServiceUtil.addFolder(repositoryId,PARENT_FOLDER_ID, ROOT_FOLDER_NAME,ROOT_FOLDER_DESCRIPTION, serviceContext);
+				if (!isRootFolderExist(themeDisplay)) {
+					folder = DLAppServiceUtil.addFolder(repositoryId, PARENT_FOLDER_ID, ROOT_FOLDER_NAME, ROOT_FOLDER_DESCRIPTION, serviceContext);
+				} else {
+					folder = DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+				}
 				System.out.println("Main folder: " + folder.getName() + " / " + folder.getFolderId());
 				folder = DLAppServiceUtil.addFolder(repositoryId,folder.getFolderId(),Long.toString(themeDisplay.getUserId()),"user folder", serviceContext);
 			} catch (PortalException e1) {
@@ -90,6 +94,18 @@ public class UserDocumentUploadPortlet extends MVCPortlet {
 			}
 		}
 		return folder;
+	}
+
+	public boolean isRootFolderExist(ThemeDisplay themeDisplay){
+		boolean folderExist = false;
+		try {
+			DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+			folderExist = true;
+			System.out.println("Folder is already Exist");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return folderExist;
 	}
 
 
