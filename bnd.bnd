@@ -1,0 +1,4 @@
+Bundle-Name: UserDocumentUpload
+Bundle-SymbolicName: userdocumentupload
+Bundle-Version: 1.0.0
+Export-Package: userdocumentupload.constants
