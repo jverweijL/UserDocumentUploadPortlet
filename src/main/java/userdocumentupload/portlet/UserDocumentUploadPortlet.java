@@ -50,6 +50,7 @@ import java.util.Map;
 )
 /**
  * Portlet to upload documents into the D&M Library
+ * Code is based on https://liferayiseasy.blogspot.com/2015/07/how-to-upload-documents-and-files-in.html
  */
 public class UserDocumentUploadPortlet extends MVCPortlet {
 	private static String ROOT_FOLDER_NAME = "upload_folder";//PortletProps.get("fileupload.folder.name");
@@ -61,7 +62,6 @@ public class UserDocumentUploadPortlet extends MVCPortlet {
 		ThemeDisplay themeDisplay = (ThemeDisplay) actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 		createFolder(actionRequest, themeDisplay);
 		fileUpload(themeDisplay, actionRequest);
-
 	}
 
 	public void downloadFiles(ActionRequest actionRequest,ActionResponse actionResponse) throws IOException,PortletException, PortalException, SystemException
@@ -81,6 +81,8 @@ public class UserDocumentUploadPortlet extends MVCPortlet {
 			try {
 				ServiceContext serviceContext = ServiceContextFactory.getInstance(DLFolder.class.getName(), actionRequest);
 				folder = DLAppServiceUtil.addFolder(repositoryId,PARENT_FOLDER_ID, ROOT_FOLDER_NAME,ROOT_FOLDER_DESCRIPTION, serviceContext);
+				System.out.println("Main folder: " + folder.getName() + " / " + folder.getFolderId());
+				folder = DLAppServiceUtil.addFolder(repositoryId,folder.getFolderId(),Long.toString(themeDisplay.getUserId()),"user folder", serviceContext);
 			} catch (PortalException e1) {
 				e1.printStackTrace();
 			} catch (SystemException e1) {
@@ -94,7 +96,8 @@ public class UserDocumentUploadPortlet extends MVCPortlet {
 	public boolean isFolderExist(ThemeDisplay themeDisplay){
 		boolean folderExist = false;
 		try {
-			DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+			Folder folder = DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+			DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), folder.getFolderId(), Long.toString(themeDisplay.getUserId()));
 			folderExist = true;
 			System.out.println("Folder is already Exist");
 		} catch (Exception e) {
@@ -106,7 +109,8 @@ public class UserDocumentUploadPortlet extends MVCPortlet {
 	public Folder getFolder(ThemeDisplay themeDisplay){
 		Folder folder = null;
 		try {
-			folder =DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+			folder = DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), PARENT_FOLDER_ID, ROOT_FOLDER_NAME);
+			folder = DLAppServiceUtil.getFolder(themeDisplay.getScopeGroupId(), folder.getFolderId(), Long.toString(themeDisplay.getUserId()));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
