@@ -72,6 +72,7 @@ public class UserDocumentUploadPortlet extends MVCPortlet {
 		actionRequest.setAttribute("urlMap", urlMap);
 		actionResponse.setRenderParameter("jspPage","/html/documentupload/download.jsp");
 	}
+
 	public Folder createFolder(ActionRequest actionRequest, ThemeDisplay themeDisplay)
 	{
 		boolean folderExist = isFolderExist(themeDisplay);
